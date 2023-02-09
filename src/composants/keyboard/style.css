@@ -1,0 +1,8 @@
+.keyboardUnit {
+    border: solid 1px black;
+}
+.keyboard {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
