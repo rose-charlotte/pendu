@@ -1,8 +1,17 @@
 .keyboardUnit {
     border: solid 1px black;
+    width: 100px;
+    font-size: 2rem;
 }
 .keyboard {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    width: 50%;
+    justify-content: center;
+}
+.container {
+    display: flex;
+    justify-content: center;
+    padding-top: 5rem;
 }

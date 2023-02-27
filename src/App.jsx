@@ -1,16 +1,34 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Header from "./composants/Header";
 import BodyPendu from "./composants/BodyPendu";
 import Keyboard from "./composants/keyboard/Keyboard.jsx";
-import WordToFind from "./composants/wordTofind/WordToFind";
-import GetStarted from "./composants/GetStarted";
 
-const data = ["a", "b", "c"];
+import GetStarted from "./composants/GetStarted";
+import FoundWord from "./composants/FoundWord/FoundWord";
+import WonPage from "./composants/WonPage";
+import LostPage from "./composants/LostPage";
+import ReturnButton from "./composants/ReturnButton";
+
+const GameStatus = {
+    Lost: "Lost",
+    NotStarted: "NotStarted",
+    Playing: "Playing",
+    Won: "Won",
+};
+
 function App() {
     const [keysPressed, setKeysPressed] = useState([]);
-    const [word] = useState("bamboula");
+    const [word, setWord] = useState();
+    const [errorCount, setErrorCount] = useState(0);
+    const [gameStatus, setGameStatus] = useState(GameStatus.NotStarted);
+
+    const onGetStarted = newWord => {
+        setKeysPressed([]);
+        setErrorCount(0);
+        setWord(newWord);
+        setGameStatus(GameStatus.Playing);
+    };
 
     console.log("mon mot est", word);
 
@@ -20,13 +38,46 @@ function App() {
         setKeysPressed([...keysPressed, letter]);
     };
 
+    useEffect(() => {
+        if (!word) return;
+
+        const letterArray = word.split("");
+
+        const errors = keysPressed.reduce(
+            (errCount, key) => (letterArray.some(letter => letter === key) ? errCount : errCount + 1),
+            0
+        );
+
+        setErrorCount(errors);
+
+        if (errors === 7) {
+            setGameStatus(GameStatus.Lost);
+        }
+
+        if (letterArray.every(letter => keysPressed.includes(letter))) {
+            setGameStatus(GameStatus.Won);
+        }
+    }, [keysPressed]);
+
+    const onClick = () => {
+        console.log("je return");
+        setGameStatus(GameStatus.NotStarted);
+    };
     return (
         <>
             <Header />
-            <BodyPendu />
-            <Keyboard keyboardValue={keysPressed} onKeyPressed={onKeyPressed} />
-            <WordToFind word={word} />
-            <GetStarted />
+            {gameStatus === GameStatus.Playing && (
+                <>
+                    <BodyPendu errorCount={errorCount} />
+                    <FoundWord word={word} keysPressed={keysPressed} />
+                    <Keyboard keyboardValue={keysPressed} onKeyPressed={onKeyPressed} />
+
+                    <ReturnButton gameStatus={gameStatus} onClick={onClick} />
+                </>
+            )}
+            {gameStatus === GameStatus.Won && <WonPage />}
+            {gameStatus === GameStatus.Lost && <LostPage />}
+            {gameStatus !== GameStatus.Playing && <GetStarted setWord={onGetStarted} />}
         </>
     );
 }

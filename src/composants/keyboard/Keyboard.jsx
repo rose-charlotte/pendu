@@ -35,10 +35,12 @@ function Keyboard({ onKeyPressed }) {
     ];
 
     return (
-        <div className="keyboard">
-            {letters.map(letter => (
-                <KeyboardUnit key={letter} letter={letter} onKeyboardUnitClick={onKeyPressed} />
-            ))}
+        <div className="container">
+            <div className="keyboard">
+                {letters.map(letter => (
+                    <KeyboardUnit key={letter} letter={letter} onKeyboardUnitClick={onKeyPressed} />
+                ))}
+            </div>
         </div>
     );
 }
